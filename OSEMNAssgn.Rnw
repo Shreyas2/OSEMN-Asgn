@@ -1,0 +1,68 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{Do G Rated Movies earn Higer/Lower ratings than the R Rated Movies?}
+\maketitle
+\section*{Abstract}
+Movies are now one of the easiest and best source of entertainment in today’s world. A Movie, also called a motion picture, is a series of still images which, when shown on a screen, creates the illusion of moving images due to the phi-phenomenon. There are variety of movies made, based on the interests, which can be cultural, fiction, action, real- life based, animation or horror. We are going to discuss the kids and horror movies, out of which usually the animation movies are for kids based on the cartoon characters and usually fiction and imaginary stories, whereas the horror movies have more of the contents that make the viewer afraid with special effects and fictitious life threatening characters. Here we are going discuss below on the G and R rated movies and compare its success rate, based on various surveys and observations.
+
+
+<<osemn,echo=TRUE, warning= FALSE>>=
+library(ggplot2)
+tablenum <- 3;
+url <- rvest::html("http://www.rottentomatoes.com/top/bestofrt/top_100_horror_movies/?category=10")
+horror.m <- rvest::html_table(rvest::html_nodes(url,"table")[[tablenum]])
+horror.m <- as.data.frame(horror.m)
+str(horror.m)
+top_horror <- write.csv(horror.m)
+
+write.csv(horror.m, file = "top_horror.csv", append = FALSE, quote = TRUE, sep = '',
+          eol = "\n", na = "NA",dec = ".", row.names = TRUE, col.names = TRUE, 
+          qmethod = c("escape", "double"))
+
+df1<-na.omit(horror.m$RatingTomatometer)
+df1
+df2<- gsub("[:print:]","",horror.m)
+df3<-c(df2)
+
+df2<-as.numeric(gsub("%","",df1))
+str(df2)
+df4<-mean(df2)
+  
+  
+tablenum <- 3;
+url <- rvest::html("http://www.rottentomatoes.com/top/bestofrt/top_100_kids__family_movies/?category=11")
+kids.m <- rvest::html_table(rvest::html_nodes(url,"table")[[tablenum]])
+kids.m <- as.data.frame(kids.m)
+str(kids.m)
+top_kids <- write.csv(kids.m)
+
+write.csv(kids.m, file = "top_kids.csv", append = FALSE, quote = TRUE, sep ='',
+          eol = "\n", na = "NA",dec = ".", row.names = TRUE, col.names = TRUE, 
+          qmethod = c("escape", "double")) 
+
+df5<-na.omit(kids.m$RatingTomatometer)
+df5
+df6<- gsub("[:print:]","",kids.m)
+df7<-c(df6)
+
+df6<-as.numeric(gsub("%","",df5))
+str(df6)
+df8<-mean(df6)
+
+data1<-(c("Horror","Kids"))
+data1
+data2<-(c(df4,df8))
+data2
+
+
+abc=data.frame(genre=factor(data1, levels=data1), rating=data2)
+
+ggplot(data=abc, aes(x=genre, y=rating,fill=genre))+geom_bar(stat="identity")+ggtitle("Osemn Movies Comparison")
+
+@
+
+Result - The result from the graph shows that the Kids Movie, which is a G Rated Movies have more viewers and ratings, as compared to the R Rated Horror Movies.
+
+\end{document}
